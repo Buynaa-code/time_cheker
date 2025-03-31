@@ -9,10 +9,10 @@ class ApiService {
   Future<Response> get(
       {required String endPoint,
       dynamic data,
-      dynamic params,
-      required Map<String, String> queryParameters}) async {
+      Map<String, dynamic>? params,
+      Map<String, String>? queryParameters}) async {
     var response = await _dio.get('${MyApp.url}$endPoint',
-        data: data, queryParameters: params);
+        data: data, queryParameters: queryParameters ?? params);
     return response;
   }
 

@@ -23,6 +23,39 @@ class _DropdownWidgetState extends State<DropdownWidget> {
   void initState() {
     super.initState();
     futureDates = widget.fetchDateInfo();
+    _initializeSelectedDate();
+  }
+
+  Future<void> _initializeSelectedDate() async {
+    try {
+      final dates = await futureDates;
+      if (dates.isNotEmpty) {
+        if (mounted) {
+          // Find the date that matches the kharuulakh value
+          DateInfo defaultDate = dates.last; // Default to last
+
+          // Get the kharuulakh value from the first date (all dates have the same value)
+          String? kharuulakhValue = dates.first.kharuulakh;
+
+          if (kharuulakhValue != null && kharuulakhValue.isNotEmpty) {
+            // Find the date that matches the kharuulakh value
+            for (var date in dates) {
+              if ("${date.date} - ${date.day}" == kharuulakhValue) {
+                defaultDate = date;
+                break;
+              }
+            }
+          }
+
+          setState(() {
+            selectedDateInfo = defaultDate;
+          });
+          widget.onDateSelected(defaultDate);
+        }
+      }
+    } catch (e) {
+      // Handle error if needed
+    }
   }
 
   @override
@@ -59,7 +92,9 @@ class _DropdownWidgetState extends State<DropdownWidget> {
             borderRadius: BorderRadius.circular(20),
             value: selectedDateInfo,
             hint: Text(
-              "Он сар сонгох",
+              dates.isNotEmpty && dates.first.kharuulakh != null
+                  ? dates.first.kharuulakh!
+                  : "03/30 - Ням",
               style: ktsBodyLargeBold.copyWith(color: whiteColor),
             ),
             isExpanded: true,

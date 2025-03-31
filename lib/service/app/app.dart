@@ -5,14 +5,14 @@ import 'package:time_cheker/bloc/auth_bloc.dart';
 import 'package:time_cheker/screens/login/login_screen.dart';
 
 class MyApp extends StatefulWidget {
-  static String url = 'https://office.jbch.mkh.mn/api';
+  static String url = 'https://timecheck.mkh.mn/api';
   static bool debug = true;
 
   MyApp({super.key}) {
     if (debug) {
-      url = 'https://office.jbch.mkh.mn/api';
+      url = 'https://timecheck.mkh.mn/api';
     } else {
-      url = 'https://office.jbch.mkh.mn/api';
+      url = 'https://timecheck.mkh.mn/api';
     }
   }
 

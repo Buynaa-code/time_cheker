@@ -69,6 +69,16 @@ class RepositoryImpl extends Repository {
       return token;
     } catch (error) {
       loggerPretty.e('Login failed: $error');
+      if (error is DioException && error.response?.statusCode == 401) {
+        // Handle unauthorized error - extract the message from response if available
+        final errorData = error.response?.data;
+        if (errorData != null &&
+            errorData is Map &&
+            errorData.containsKey('message')) {
+          // Return 'InvalidCredentials' for correct error handling in UI
+          return 'InvalidCredentials';
+        }
+      }
       rethrow;
     }
   }
@@ -76,16 +86,44 @@ class RepositoryImpl extends Repository {
   @override
   Future<List<DateInfo>> fetchDateInfo() async {
     try {
-      final response =
-          await _apiService.get(endPoint: '/ognoo', queryParameters: {
-        'ognoo': '2023-01-01',
-      });
+      final response = await _apiService.get(
+        endPoint: '/ognoo',
+        queryParameters: {'ognoo': '2023-01-01'},
+      );
 
       // JSON өгөгдлийг бүхэлд нь хэвлэх
       loggerPretty.e('Response Data: ${response.data}');
 
-      // `data` нь List эсэхийг шалгах
-      if (response.data is List) {
+      // Handle if response.data is a Map instead of a List
+      if (response.data is Map) {
+        final Map<String, dynamic> dataMap = response.data;
+        String kharuulakhValue = '';
+
+        if (dataMap.containsKey('kharuulakh')) {
+          kharuulakhValue = dataMap['kharuulakh'] as String;
+        }
+
+        if (dataMap.containsKey('udruud') && dataMap['udruud'] is List) {
+          final List<DateInfo> dateList = (dataMap['udruud'] as List).map((e) {
+            try {
+              DateInfo dateInfo = DateInfo.fromString(e);
+              // Set kharuulakh value for all dates
+              dateInfo.kharuulakh = kharuulakhValue;
+              return dateInfo;
+            } catch (error) {
+              loggerPretty.e('Error parsing dateInfo: $error | Data: $e');
+              rethrow;
+            }
+          }).toList();
+
+          return dateList;
+        } else {
+          throw Exception(
+              "Required 'udruud' key not found in the response data");
+        }
+      }
+      // Original code for handling a List response
+      else if (response.data is List) {
         return (response.data as List).map((e) {
           try {
             return DateInfo.fromString(e); // fromJson биш fromString ашиглана
@@ -96,7 +134,7 @@ class RepositoryImpl extends Repository {
         }).toList();
       } else {
         throw Exception(
-            "Invalid data format: Expected a List but got ${response.data.runtimeType}");
+            "Invalid data format: Expected a List or Map but got ${response.data.runtimeType}");
       }
     } catch (error) {
       loggerPretty.e('fetch date info error: $error');
