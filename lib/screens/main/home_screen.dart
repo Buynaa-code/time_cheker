@@ -129,6 +129,19 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: n16),
+                DropdownWidget(
+                  fetchDateInfo: _repository.fetchDateInfo,
+                  onDateSelected: (dateInfo) {
+                    setState(() {
+                      selectedDateInfo = dateInfo;
+                    });
+                  },
+                ),
+                const SizedBox(height: n16),
+                Text(
+                  "Ирц бүртгэл",
+                  style: ktsBodyMassiveBold.copyWith(color: greyColor8),
+                ),
                 const SizedBox(height: n16),
                 Container(
                   height: MediaQuery.of(context).size.height - 240,

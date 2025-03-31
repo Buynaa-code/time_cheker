@@ -245,6 +245,7 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: informationColor9,
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -396,17 +397,6 @@ class _LoginScreenState extends State<LoginScreen>
               h24(),
               _buildLoginButton(),
               const SizedBox(height: n16),
-              Center(
-                child: TextButton(
-                  onPressed: () {
-                    // Forgot password action
-                  },
-                  child: Text(
-                    'Нууц үгээ мартсан уу?',
-                    style: ktsBodyRegular.copyWith(color: informationColor7),
-                  ),
-                ),
-              ),
             ],
           ),
         ),

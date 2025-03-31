@@ -114,8 +114,19 @@ class _DropdownWidgetState extends State<DropdownWidget> {
                 selectedDateInfo = newDateInfo;
               });
               if (newDateInfo != null) {
-                widget.onDateSelected(newDateInfo); // Callback-аар дамжуулах
+                widget.onDateSelected(newDateInfo);
               }
+            },
+            selectedItemBuilder: (BuildContext context) {
+              return dates.map<Widget>((DateInfo dateInfo) {
+                return Container(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "${dateInfo.date} - ${dateInfo.day}",
+                    style: ktsBodyLargeBold.copyWith(color: whiteColor),
+                  ),
+                );
+              }).toList();
             },
           ),
         );

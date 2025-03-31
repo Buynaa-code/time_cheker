@@ -29,6 +29,17 @@ class _CartState extends State<Cart> {
   final Repository _repository = instance<Repository>();
   Map<int, bool> memberStatus = {};
 
+  @override
+  void didUpdateWidget(Cart oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // If the selectedDateInfo has changed, clear the member status
+    if (oldWidget.selectedDateInfo != widget.selectedDateInfo) {
+      setState(() {
+        memberStatus.clear();
+      });
+    }
+  }
+
   Future<void> _irsenIreegui(Member member) async {
     if (widget.selectedDateInfo == null) {
       _showSnackBar(context, 'Огноо сонгоогүй байна!', false);
@@ -61,25 +72,10 @@ class _CartState extends State<Cart> {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-  void _onDateSelected(DateInfo selectedDateInfo) {
-    setState(() {
-      selectedDateInfo = selectedDateInfo; // Сонгосон огноог хадгалах
-      memberStatus
-          .clear(); // Жагсаалтыг дахин шинэчлэхийн тулд status-ыг цэвэрлэх
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        DropdownWidget(
-          fetchDateInfo: () async {
-            return await _repository.fetchDateInfo();
-          },
-          onDateSelected:
-              _onDateSelected, // Огноо сонгосны дараа дуудаж байх callback
-        ),
         Expanded(
           child: BlocBuilder<AuthBloc, AuthState>(
             builder: (context, state) {
